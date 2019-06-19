@@ -1,0 +1,1085 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "API documentation for the filemanager backend service",
+      "version": "1.0.0",
+      "title": "Chekwube filemanager API",
+      "termsOfService": "",
+      "contact": {
+        "email": "chekwubeudeogu.com"
+      },
+      "license": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+    },
+    "host": "p-file-manager-api-dev.quabbly.com",
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/v1/user/upload_file": {
+        "post": {
+          "tags": [
+            "File Upload"
+          ],
+          "summary": "Add new file(s)",
+          "description": "",
+          "operationId": "uploadFile",
+          "consumes": [
+            "multipart/form-data"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "formData",
+              "name": "file",
+              "type": "file",
+              "description": "File(s) that needs to be added to the db"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "CREATED",
+              "schema": {
+                "$ref": "#/definitions/UploadFileSuccess"
+              }
+            },
+            "400": {
+              "description": "FAILED_VALIDATION"
+            },
+            "500": {
+              "description": "ERROR"
+            }
+          }
+        }
+      },
+      "/v1/service/upload_files": {
+        "post": {
+          "tags": [
+            "Service Upload File"
+          ],
+          "summary": "File upload for other microservices",
+          "description": "",
+          "operationId": "serviceUploadFile",
+          "consumes": [
+            "multipart/form-data"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "formData",
+              "name": "files",
+              "type": "file",
+              "description": "File that needs to be added to the db"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "CREATED",
+              "schema": {
+                "$ref": "#/definitions/ServiceUploadFileSuccess"
+              }
+            },
+            "400": {
+              "description": "FAILED_VALIDATION"
+            },
+            "500": {
+              "description": "ERROR"
+            }
+          }
+        }
+      },
+      "/v1/user/list_files": {
+        "get": {
+          "tags": [
+            "List Files"
+          ],
+          "summary": "Lists all root and folder files",
+          "description": "",
+          "operationId": "listFiles",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "List files",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/ListFileSuccess"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS"
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/rename_file/:id": {
+        "put": {
+          "tags": [
+            "Rename Files"
+          ],
+          "summary": "Renames a file selected by Id",
+          "description": "",
+          "operationId": "renameFile",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "List files",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/RenameFileSchema"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS",
+              "schema": {
+                "$ref": "#/definitions/RenameFileSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/create_folder": {
+        "post": {
+          "tags": [
+            "Create Folder"
+          ],
+          "summary": "Creates a folder",
+          "description": "",
+          "operationId": "createFolder",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Create Folder",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/CreateFolderSchema"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS",
+              "schema": {
+                "$ref": "#/definitions/CreateFolderSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/rename_folder/:id": {
+        "put": {
+          "tags": [
+            "Rename Folder"
+          ],
+          "summary": "Renames a folder selected by Id",
+          "description": "",
+          "operationId": "renameFolder",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "List files",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/RenameFolderSchema"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS",
+              "schema": {
+                "$ref": "#/definitions/RenameFolderSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/share_folder/:id": {
+        "put": {
+          "tags": [
+            "Share a Folder"
+          ],
+          "summary": "Shares a folder with a recipient",
+          "description": "",
+          "operationId": "shareFolder",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Share Folder",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/ShareFolderSchema"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS",
+              "schema": {
+                "$ref": "#/definitions/ShareFolderSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/share_file/:id": {
+        "put": {
+          "tags": [
+            "Share a File"
+          ],
+          "summary": "Shares a file with a recipient",
+          "description": "",
+          "operationId": "shareFile",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Share File",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/ShareFileSchema"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCESS",
+              "schema": {
+                "$ref": "#/definitions/ShareFileSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/list_folders": {
+        "get": {
+          "tags": [
+            "List Folders"
+          ],
+          "summary": "List folders root and subfolders contained in the db",
+          "description": "",
+          "operationId": "listFolders",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCESS",
+              "schema": {
+                "$ref": "#/definitions/ListSubFoldersSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/download_file": {
+        "get": {
+          "tags": [
+            "Download File"
+          ],
+          "summary": "Download a file to the storage",
+          "description": "",
+          "operationId": "downloadfile",
+          "produces": [
+            "application/octet-stream"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS"
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/download_shared_file/:id": {
+        "get": {
+          "tags": [
+            "Download Shared Private File"
+          ],
+          "summary": "Download shared private file",
+          "description": "",
+          "operationId": "downloadSharedPrivateFile",
+          "produces": [
+            "application/octet-stream"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS"
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/share/public_file/:id": {
+        "get": {
+          "tags": [
+            "Download Shared Public File"
+          ],
+          "summary": "Download shared public file to the storage",
+          "description": "",
+          "operationId": "downloadSharedPublicFile",
+          "produces": [
+            "application/octet-stream"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS"
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/folder_shared_with_me/{Id}": {
+        "get": {
+          "tags": [
+            "List Private Share Folder(s)"
+          ],
+          "summary": "List Folder(s) Shared With Me",
+          "description": "",
+          "operationId": "listFolder(s)SharedWithMe",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "Id",
+              "type": "integer",
+              "required": true,
+              "description": "Use /Id to get the subfolder or /all to get the parent folders."
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCESS",
+              "schema": {
+                "$ref": "#/definitions/ListSubFoldersSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/delete_file/{id}": {
+        "delete": {
+          "tags": [
+            "delete a File"
+          ],
+          "summary": "Delete a file in the db",
+          "description": "",
+          "operationId": "DeleteFile",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "integer",
+              "required": true,
+              "description": "Use /Id to delete a particular file with Id"
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "204": {
+              "description": "The resource was deleted successfully"
+            },
+            "400": {
+              "description": "Failed Validation",
+              "schema": {
+                "$ref": "#/definitions/DeleteFileFailed"
+              }
+            }
+          }
+        }
+      },
+      "/v1/user/delete_folder/{id}": {
+        "delete": {
+          "tags": [
+            "delete a Folder"
+          ],
+          "summary": "Delete a folder in the db",
+          "description": "",
+          "operationId": "DeleteFolder",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "integer",
+              "required": true,
+              "description": "Use /Id to delete a particular folder with Id"
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "204": {
+              "description": "The resource was deleted successfully"
+            },
+            "400": {
+              "description": "Failed Validation",
+              "schema": {
+                "$ref": "#/definitions/DeleteFolderFailed"
+              }
+            }
+          }
+        }
+      },
+      "/v1/user/file_shared_with_me/{Id}": {
+        "get": {
+          "tags": [
+            "List Private Shared File(s)"
+          ],
+          "summary": "List File(s) Shared With Me",
+          "description": "",
+          "operationId": "listFile(s)SharedWithMe",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "Id",
+              "type": "integer",
+              "required": true,
+              "description": "Use /Id to get the subfolder or /all to get the parent folders."
+            }
+          ],
+          "produces": [
+            "application/octet-stream"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCESS",
+              "schema": {
+                "$ref": "#/definitions/ListPrivateSharedFileSchema"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/share/{Id}": {
+        "get": {
+          "tags": [
+            "Share Private File(s) and folder(s) to all users"
+          ],
+          "summary": "Endpoint to share a file or folder to all users under a tenant",
+          "description": "",
+          "operationId": "shareFileOrFolder",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "Id",
+              "type": "integer",
+              "required": true,
+              "description": "Use Id to select a particular file or folder"
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCESS",
+              "schema": {
+                "$ref": "#/definitions/ShareFileSuccess"
+              }
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      },
+      "/v1/user/download_folder/{Id}": {
+        "get": {
+          "tags": [
+            "Folder download"
+          ],
+          "summary": "downloads a folder with its content",
+          "description": "",
+          "operationId": "downloadFolder",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "Id",
+              "type": "integer",
+              "required": true,
+              "description": "Use /Id to target a particular folder"
+            }
+          ],
+          "produces": [
+            "application/zip"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCESS"
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "412": {
+              "description": "Precondition Failed"
+            }
+          }
+        }
+      },
+      "/v1/user/view_file": {
+        "get": {
+          "tags": [
+            "View File"
+          ],
+          "summary": "View an uploaded file",
+          "description": "",
+          "operationId": "viewfile",
+          "produces": [
+            "application/octet-stream"
+          ],
+          "responses": {
+            "200": {
+              "description": "SUCCCESS"
+            },
+            "400": {
+              "description": "Failed Validation"
+            },
+            "404": {
+              "description": "File not found"
+            },
+            "405": {
+              "description": "Validation exception"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "UploadFileSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "CREATED"
+          },
+          "secret": {
+            "type": "object",
+            "example": {
+              "fileName": "45095172059de6423ed8add26550c7f0-1551273989795",
+              "originalFileName": "1.gif",
+              "fileExtension": "image/gif",
+              "fileSize": 41771,
+              "sharing": []
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "ListFileSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "RenameFileSchema": {
+        "type": "object",
+        "required": [
+          "originalFileName"
+        ],
+        "properties": {
+          "originalFileName": {
+            "type": "string",
+            "example": "Okeke Okafor"
+          }
+        }
+      },
+      "RenameFileSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "CREATED"
+          },
+          "secret": {
+            "type": "object",
+            "example": {}
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "RenameFolderSchema": {
+        "type": "object",
+        "required": [
+          "folderName"
+        ],
+        "properties": {
+          "folderName": {
+            "type": "string",
+            "example": "Okeke Okafor"
+          },
+          "folderId": {
+            "type": "string",
+            "example": "5chgyff657890hbjnk8kj"
+          }
+        }
+      },
+      "RenameFolderSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "CREATED"
+          },
+          "secret": {
+            "type": "object",
+            "example": {}
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "CreateFolderSchema": {
+        "type": "object",
+        "required": [
+          "folderName"
+        ],
+        "properties": {
+          "folderName": {
+            "type": "string",
+            "example": "Okeke_Okafor"
+          },
+          "folderId": {
+            "type": "string",
+            "example": "65656bjbj87979"
+          }
+        }
+      },
+      "CreateFolderSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "CREATED"
+          },
+          "secret": {
+            "type": "object",
+            "example": {
+              "folderName": "Amara"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "ListSubFoldersSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "ListPrivateSharedFileSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "ShareFolderSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "shared_with",
+          "shareType"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "example": "https://www.photizzo.com"
+          },
+          "shared_with": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": [
+                "quabbly@photizzo.com"
+              ]
+            }
+          },
+          "comment": {
+            "type": "string",
+            "example": "Check out this folder"
+          },
+          "shareType": {
+            "type": "string",
+            "example": "private"
+          }
+        }
+      },
+      "ShareFolderSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "secret": {
+            "type": "object",
+            "properties": {
+              "originalName": {
+                "type": "string",
+                "example": "my folder"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "ShareFileSchema": {
+        "type": "object",
+        "required": [
+          "baseUrl",
+          "shared_with",
+          "shareType"
+        ],
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "example": "https://www.photizzo.com"
+          },
+          "shared_with": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": [
+                "quabbly@photizzo.com"
+              ]
+            }
+          },
+          "comment": {
+            "type": "string",
+            "example": "Check out this folder"
+          },
+          "shareType": {
+            "type": "string",
+            "example": "private"
+          }
+        }
+      },
+      "ShareFileSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "secret": {
+            "type": "object",
+            "properties": {
+              "originalName": {
+                "type": "string",
+                "example": "my folder"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2019-01-13T23:33:21.586Z"
+          },
+          "_id": {
+            "type": "string",
+            "example": "5c3bcfc1eb99dd0010d335fe"
+          }
+        }
+      },
+      "DeleteFileFailed": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Failed Validation"
+          },
+          "data": {
+            "type": "string",
+            "example": [
+              "Sorry you cannot delete this file"
+            ]
+          }
+        }
+      },
+      "DeleteFolderFailed": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Failed Validation"
+          },
+          "data": {
+            "type": "string",
+            "example": [
+              "Sorry you cannot delete this folder"
+            ]
+          }
+        }
+      },
+      "ServiceUploadFileSuccess": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "CREATED"
+          },
+          "data": {
+            "type": "object",
+            "example": {
+              "token": "hghjhkhh65675898787nbhbj768"
+            }
+          }
+        }
+      }
+    }
+  }
