@@ -4,8 +4,13 @@ const mongoose_1 = require("mongoose");
 exports.UploadSchema = new mongoose_1.Schema({
     secret: {
         originalFileName: String,
-        fileName: String,
-        fileSize: Number,
+        url: String,
+        public_id: String,
+        fileSize: String,
         fileExtension: String
+    },
+    nameHash: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });

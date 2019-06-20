@@ -26,7 +26,7 @@ class Server {
         this.runners(this.connection);
     }
     config() {
-        const MONGODB_CONNECTION = process.env.MONGODB_HOST + process.env.DB_NAME;
+        const MONGODB_CONNECTION = "mongodb://cheks:CHEKWUBE1@ds239967.mlab.com:39967/file-keeper";
         this.app.use(express.static(path.join(__dirname, "public")));
         this.app.use(logger("dev"));
         this.app.use(bodyParser.json());

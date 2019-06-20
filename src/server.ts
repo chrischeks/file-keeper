@@ -80,8 +80,9 @@ export class Server {
    * @class Server
    * @method config
    */
+  
   public config() {
-    const MONGODB_CONNECTION: string = process.env.MONGODB_HOST + process.env.DB_NAME;
+    const MONGODB_CONNECTION: string = "mongodb://cheks:CHEKWUBE1@ds239967.mlab.com:39967/file-keeper";
     
     //add static paths
     this.app.use(express.static(path.join(__dirname, "public")));
