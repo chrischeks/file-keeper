@@ -17,32 +17,41 @@ const unlinkAsync = promisify(fs.unlink);
 class FileService extends baseservice_1.BaseService {
     processFileupload(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var savedFiles = [];
-            for (var i = 0; i < req.files.length; i++) {
-                let file = req.files[i];
-                let uploadFileModel = yield req.app.locals.file({ secret: { originalFileName: file.originalname, fileName: file.filename, fileSize: file.size, fileExtension: file.mimetype }, nameHash: this.sha256(file.filename) });
-                yield uploadFileModel.save().then(result => {
-                    if (!result) {
-                        return this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.FAILED_VALIDATION), req, res);
-                    }
-                    else {
-                        savedFiles.push({
-                            secret: {
-                                fileName: file.filename,
-                                originalFileName: file.originalname,
-                                fileExtension: file.mimetype,
-                                fileSize: file.size
-                            },
-                            _id: result._id,
-                            createdAt: result.createdAt,
-                            updatedAt: result.updatedAt
-                        });
-                    }
-                }).catch(err => {
-                    console.log(err);
-                });
+            try {
+                var savedFiles = [];
+                const fileDetails = req.files;
+                for (let i = 0; i < fileDetails.length; i++) {
+                    let file = fileDetails[i];
+                    console.log(file.path, 'uuuuuuu');
+                    let uploadFileModel = yield req.app.locals.file({ secret: { url: file.url, public_id: file["public_id"], originalFileName: file.originalname, fileSize: (file.bytes / 1000 + 'kb'), fileExtension: file.mimetype }, nameHash: this.sha256(file.originalname) });
+                    yield uploadFileModel.save().then(result => {
+                        if (!result) {
+                            return this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.FAILED_VALIDATION), req, res);
+                        }
+                        else {
+                            savedFiles.push({
+                                secret: {
+                                    originalFileName: file.originalname,
+                                    fileExtension: file.mimetype,
+                                    fileSize: (file.bytes / 1000 + 'kb'),
+                                    url: file.url,
+                                    public_id: file["public_id"]
+                                },
+                                nameHash: result.nameHash,
+                                _id: result._id,
+                                createdAt: result.createdAt,
+                                updatedAt: result.updatedAt
+                            });
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                    });
+                }
+                return this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.SUCCESS, savedFiles), req, res);
             }
-            return this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.SUCCESS, savedFiles), req, res);
+            catch (error) {
+                return this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.ERROR, error), req, res);
+            }
         });
     }
     processDeleteFile(req, res, next, userId, tenantId) {

@@ -1,14 +1,19 @@
 import { Schema, model } from "mongoose";
 
 export var UploadSchema: Schema = new Schema({
-   secret: { 
+    secret: {
         originalFileName: String,
-        fileName: String,
-        fileSize: Number,
+        url: String,
+        public_id: String,
+        fileSize: String,
         fileExtension: String
+    },
+    nameHash: {
+        type: String,
+        required: true
     }
 
-}, {timestamps: true});
+}, { timestamps: true });
 
 
 
