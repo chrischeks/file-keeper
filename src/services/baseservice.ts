@@ -6,7 +6,7 @@ import crypto = require('crypto');
 import { NextFunction, Request, Response } from "express";
 const qs = require('qs') ;
 import * as http from "http"
-import * as mustache from "mustache"
+// import * as mustache from "mustache"
 const axios = require("axios");
 const fs = require('fs')
 
@@ -134,13 +134,13 @@ export class BaseService {
     protected sendMail(req, res: Response, next: NextFunction, recipients, senderName, senderEmail, fileName) {
         const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT,'utf8');
         const view = {data:{senderName: senderName, senderEmail:senderEmail, fileName: fileName}}
-        const output = mustache.render(content, view);
+        // const output = mustache.render(content, view);
 
         
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
        let payload = new URLSearchParams();
        payload.append("subject", "Quabbly Sharing")
-       payload.append("htmlContent", output)
+    //    payload.append("htmlContent", output)
        recipients.forEach(element => {
            payload.append("recipient", element)
        });
