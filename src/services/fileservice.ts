@@ -8,10 +8,10 @@ import { UploadFileDTO } from "../dtos/inputs/uploadfiledto";
 import { validateSync } from "class-validator";
 
 
-const fs = require('fs')
-const { promisify } = require('util')
+// const fs = require('fs')
+// const { promisify } = require('util')
 
-const unlinkAsync = promisify(fs.unlink)
+// const unlinkAsync = promisify(fs.unlink)
 
 
 export class FileService extends BaseService {
@@ -77,7 +77,7 @@ export class FileService extends BaseService {
 
             let dir = process.env.UPLOAD_PATH + '/' + existingFile.secret.fileName;
 
-            await unlinkAsync(dir)
+            // await unlinkAsync(dir)
             await req.app.locals.file.deleteOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
 
                 if (result) {

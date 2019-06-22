@@ -4,11 +4,11 @@ import { BasicResponse } from "../dtos/outputs/basicresponse";
 import { Status } from "../dtos/enums/statusenums";
 import crypto = require('crypto');
 import { NextFunction, Request, Response } from "express";
-const qs = require('qs') ;
-import * as http from "http"
-// import * as mustache from "mustache"
-const axios = require("axios");
-const fs = require('fs')
+// const qs = require('qs') ;
+// import * as http from "http"
+// // import * as mustache from "mustache"
+// const axios = require("axios");
+// const fs = require('fs')
 
 
 export class BaseService {
@@ -132,7 +132,7 @@ export class BaseService {
 
 
     protected sendMail(req, res: Response, next: NextFunction, recipients, senderName, senderEmail, fileName) {
-        const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT,'utf8');
+        // const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT,'utf8');
         const view = {data:{senderName: senderName, senderEmail:senderEmail, fileName: fileName}}
         // const output = mustache.render(content, view);
 
@@ -146,62 +146,62 @@ export class BaseService {
        });
 
 
-        axios({
-            url: process.env.EMAIL_URL,
-            method: "post",
-            data: payload,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                "Authorization" : `Bearer ${token}`
-            } 
-        })
+        // axios({
+        //     url: process.env.EMAIL_URL,
+        //     method: "post",
+        //     data: payload,
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        //         "Authorization" : `Bearer ${token}`
+        //     } 
+        // })
     }
 
 
 
     protected verifyRecipient(existingDoc, req: Request, response: Response, next: NextFunction, recipients, userFirstname, userEmail, docName) {
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;      
-        axios({
-            url: process.env.USER_URL + '/v1/users/all',
-            method: "get",
-            headers: {
-                "Authorization" : `Bearer ${token}`
-            } 
-        }).then(result =>{
-            if(result){
-                const invalidEmail = this.resolveResponse(result, recipients);
-                if (invalidEmail.length > 0) {
-                    this.sendResponse(new BasicResponse(Status.PRECONDITION_FAILED, [invalidEmail.length + " recipient(s) " + "(" + invalidEmail + ")" + " not under this tenant"]), req, response);
-                } else {
-                    this.saveShareDetails(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName)
-                }
-            }            
-        }).catch(err=>{ });     
+        // axios({
+        //     url: process.env.USER_URL + '/v1/users/all',
+        //     method: "get",
+        //     headers: {
+        //         "Authorization" : `Bearer ${token}`
+        //     } 
+        // }).then(result =>{
+        //     if(result){
+        //         const invalidEmail = this.resolveResponse(result, recipients);
+        //         if (invalidEmail.length > 0) {
+        //             this.sendResponse(new BasicResponse(Status.PRECONDITION_FAILED, [invalidEmail.length + " recipient(s) " + "(" + invalidEmail + ")" + " not under this tenant"]), req, response);
+        //         } else {
+        //             this.saveShareDetails(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName)
+        //         }
+        //     }            
+        // }).catch(err=>{ });     
 
     }
 
 
     protected allUsers(existingDoc, req: Request, response: Response, next: NextFunction, userFirstname, userEmail, docName) {
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
-        axios({
-            url: process.env.USER_URL + '/v1/users/all',
-            method: "get",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        }).then(async result => {
-            if (result) {
-                const recipients = await this.getEmails(result, userEmail);
-                var that = this;
-                let shared_with = recipients.map(function (e) {
-                    return that.sha256(e);
-                });
-                let sharing = { baseUrl: "https://www.photizzo.com", shareType: "private", secret_shared_with: recipients };
-                existingDoc.secret.sharing.push(sharing);
-                existingDoc.shared_with = await this.merge(existingDoc.shared_with, shared_with);
-                this.saveShareDetails(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName)
-            }
-        }).catch(err => { });
+        // axios({
+        //     url: process.env.USER_URL + '/v1/users/all',
+        //     method: "get",
+        //     headers: {
+        //         "Authorization": `Bearer ${token}`
+        //     }
+        // }).then(async result => {
+        //     if (result) {
+        //         const recipients = await this.getEmails(result, userEmail);
+        //         var that = this;
+        //         let shared_with = recipients.map(function (e) {
+        //             return that.sha256(e);
+        //         });
+        //         let sharing = { baseUrl: "https://www.photizzo.com", shareType: "private", secret_shared_with: recipients };
+        //         existingDoc.secret.sharing.push(sharing);
+        //         existingDoc.shared_with = await this.merge(existingDoc.shared_with, shared_with);
+        //         this.saveShareDetails(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName)
+        //     }
+        // }).catch(err => { });
 
     }
 

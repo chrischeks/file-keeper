@@ -11,9 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const baseservice_1 = require("./baseservice");
 const basicresponse_1 = require("../dtos/outputs/basicresponse");
 const statusenums_1 = require("../dtos/enums/statusenums");
-const fs = require('fs');
-const { promisify } = require('util');
-const unlinkAsync = promisify(fs.unlink);
 class FileService extends baseservice_1.BaseService {
     processFileupload(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -68,7 +65,6 @@ class FileService extends baseservice_1.BaseService {
                     return next();
                 }
                 let dir = process.env.UPLOAD_PATH + '/' + existingFile.secret.fileName;
-                yield unlinkAsync(dir);
                 yield req.app.locals.file.deleteOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
                     if (result) {
                         this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.SUCCESS_NO_CONTENT), req, res);

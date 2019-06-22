@@ -12,9 +12,6 @@ const chalk = require("chalk");
 const basicresponse_1 = require("../dtos/outputs/basicresponse");
 const statusenums_1 = require("../dtos/enums/statusenums");
 const crypto = require("crypto");
-const qs = require('qs');
-const axios = require("axios");
-const fs = require('fs');
 class BaseService {
     hasErrors(errors) {
         return !(errors === undefined || errors.length == 0);
@@ -105,7 +102,6 @@ class BaseService {
         return { 'property': 'parentFolder', 'constraints': { 'invalid': 'Selected folder is invalid' }, value: null };
     }
     sendMail(req, res, next, recipients, senderName, senderEmail, fileName) {
-        const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT, 'utf8');
         const view = { data: { senderName: senderName, senderEmail: senderEmail, fileName: fileName } };
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
         let payload = new URLSearchParams();
@@ -113,57 +109,12 @@ class BaseService {
         recipients.forEach(element => {
             payload.append("recipient", element);
         });
-        axios({
-            url: process.env.EMAIL_URL,
-            method: "post",
-            data: payload,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                "Authorization": `Bearer ${token}`
-            }
-        });
     }
     verifyRecipient(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName) {
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
-        axios({
-            url: process.env.USER_URL + '/v1/users/all',
-            method: "get",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        }).then(result => {
-            if (result) {
-                const invalidEmail = this.resolveResponse(result, recipients);
-                if (invalidEmail.length > 0) {
-                    this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.PRECONDITION_FAILED, [invalidEmail.length + " recipient(s) " + "(" + invalidEmail + ")" + " not under this tenant"]), req, response);
-                }
-                else {
-                    this.saveShareDetails(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName);
-                }
-            }
-        }).catch(err => { });
     }
     allUsers(existingDoc, req, response, next, userFirstname, userEmail, docName) {
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
-        axios({
-            url: process.env.USER_URL + '/v1/users/all',
-            method: "get",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        }).then((result) => __awaiter(this, void 0, void 0, function* () {
-            if (result) {
-                const recipients = yield this.getEmails(result, userEmail);
-                var that = this;
-                let shared_with = recipients.map(function (e) {
-                    return that.sha256(e);
-                });
-                let sharing = { baseUrl: "https://www.photizzo.com", shareType: "private", secret_shared_with: recipients };
-                existingDoc.secret.sharing.push(sharing);
-                existingDoc.shared_with = yield this.merge(existingDoc.shared_with, shared_with);
-                this.saveShareDetails(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName);
-            }
-        })).catch(err => { });
     }
     getEmails(result, userEmail) {
         let usersEmail = [];
