@@ -13,7 +13,6 @@ const basicresponse_1 = require("../dtos/outputs/basicresponse");
 const statusenums_1 = require("../dtos/enums/statusenums");
 const crypto = require("crypto");
 const qs = require('qs');
-const mustache = require("mustache");
 const axios = require("axios");
 const fs = require('fs');
 class BaseService {
@@ -108,11 +107,9 @@ class BaseService {
     sendMail(req, res, next, recipients, senderName, senderEmail, fileName) {
         const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT, 'utf8');
         const view = { data: { senderName: senderName, senderEmail: senderEmail, fileName: fileName } };
-        const output = mustache.render(content, view);
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
         let payload = new URLSearchParams();
         payload.append("subject", "Quabbly Sharing");
-        payload.append("htmlContent", output);
         recipients.forEach(element => {
             payload.append("recipient", element);
         });

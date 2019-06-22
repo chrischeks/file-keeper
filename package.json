@@ -10,8 +10,10 @@
     "grunt": "grunt",
     "test": "NODE_ENV=test mocha -r ts-node/register src/test/**/*.ts --timeout 30000 --exit",
     "test_windows": "cross-env NODE_ENV=test mocha -r ts-node/register src/test/**/*.ts --timeout 50000 --exit",
-    "start": "node ./bin/www",
-    "postinstall":"tsc"
+    "start": "node ./bin/www"
+  },
+  "engines": {
+    "node": "10.15.3"
   },
   "dependencies": {
     "@types/express-jwt": "0.0.40",
