@@ -5,9 +5,9 @@
 var server = require("../dist/server");
 var debug = require("debug")("express:server");
 var http = require("http");
-
+console.log(123)
 //create http server
-var httpPort = normalizePort(process.env.PORT || 7000);
+var httpPort = normalizePort(process.env.PORT || 8080);
 var app = server.Server.bootstrap().app;
 app.set("port", httpPort);
 var httpServer = http.createServer(app);
