@@ -11,6 +11,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const baseservice_1 = require("./baseservice");
 const basicresponse_1 = require("../dtos/outputs/basicresponse");
 const statusenums_1 = require("../dtos/enums/statusenums");
+const Datauri = require("datauri");
+const cloudinary = require("cloudinary");
+const cloudinaryStorage = require("multer-storage-cloudinary");
+const dUri = new Datauri();
 class FileService extends baseservice_1.BaseService {
     processFileupload(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -19,7 +23,6 @@ class FileService extends baseservice_1.BaseService {
                 const fileDetails = req.files;
                 for (let i = 0; i < fileDetails.length; i++) {
                     let file = fileDetails[i];
-                    console.log(file.path, 'uuuuuuu');
                     let uploadFileModel = yield req.app.locals.file({ secret: { url: file.url, public_id: file["public_id"], originalFileName: file.originalname, fileSize: (file.bytes / 1000 + 'kb'), fileExtension: file.mimetype }, nameHash: this.sha256(file.originalname) });
                     yield uploadFileModel.save().then(result => {
                         if (!result) {
@@ -51,37 +54,10 @@ class FileService extends baseservice_1.BaseService {
             }
         });
     }
-    processDeleteFile(req, res, next, userId, tenantId) {
+    processListFiles(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let existingFile = null;
-                yield req.app.locals.file.findOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
-                    if (result) {
-                        existingFile = result;
-                    }
-                }).catch(err => { });
-                if (existingFile == null) {
-                    this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.FAILED_VALIDATION, ['Sorry you cannot delete this file']), req, res);
-                    return next();
-                }
-                let dir = process.env.UPLOAD_PATH + '/' + existingFile.secret.fileName;
-                yield req.app.locals.file.deleteOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
-                    if (result) {
-                        this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.SUCCESS_NO_CONTENT), req, res);
-                    }
-                }).catch(err => { });
-            }
-            catch (ex) {
-                this.sendException(ex, new basicresponse_1.BasicResponse(statusenums_1.Status.ERROR, ex), req, res, next);
-            }
-        });
-    }
-    processListFiles(req, res, next, userId, tenantId, userEmail) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let folderId = req.query.id;
-                yield this.verifyParentFolderId(folderId, userId, tenantId, userEmail, req, res, next);
-                yield this.fetchUserFiles(folderId, userEmail, userId, tenantId, req, res);
+                yield this.fetchUserFiles(req, res);
             }
             catch (ex) {
                 this.sendException(ex, new basicresponse_1.BasicResponse(statusenums_1.Status.ERROR), req, res, next);
@@ -199,17 +175,9 @@ class FileService extends baseservice_1.BaseService {
             });
         });
     }
-    fetchUserFiles(folderId, userEmail, userId, tenantId, req, res) {
+    fetchUserFiles(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var that = this;
-            let queryParams = {};
-            if (folderId == null) {
-                queryParams = { folderId: null, userId: userId, tenantId: tenantId };
-            }
-            else {
-                queryParams = { folderId: folderId, $or: [{ userId: userId }, { shared_with: that.sha256(userEmail) }], tenantId: tenantId };
-            }
-            yield req.app.locals.file.find(queryParams, { userId: 0, tenantId: 0, __v: 0, nameHash: 0 }).then(result => {
+            yield req.app.locals.file.find({}).then(result => {
                 if (result && result.length > 0) {
                     this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.SUCCESS, result), req, res);
                 }

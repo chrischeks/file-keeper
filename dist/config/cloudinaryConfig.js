@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const cloudinary_1 = require("cloudinary");
 exports.uploader = cloudinary_1.uploader;
-const dotenv = require("dotenv");
-dotenv.config();
 const cloudinaryConfig = (req, res, next) => {
     cloudinary_1.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

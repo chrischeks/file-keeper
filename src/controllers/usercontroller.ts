@@ -3,6 +3,8 @@ import { BaseController } from "./basecontroller";
 import { FileService } from '../services/fileservice';
 import multer = require("multer");
 import { BasicResponse } from "../dtos/outputs/basicresponse";
+import crypto = require('crypto');
+
 // import { FolderService } from "../services/folderservice";
 // import { ShareFileService } from "../services/shareFileService";
 // import { ShareFolderService } from '../services/shareFolderService';
@@ -20,12 +22,26 @@ cloudinary.config({
 });
 
 
-const storage = cloudinaryStorage({ cloudinary: cloudinary, folder: "demo", allowedFormats: ["jpg", "png"] });
-const upload = multer({
-  storage, limits: {
-    fileSize: +process.env.MAX_FILE_SIZE
+// //const storage = cloudinaryStorage({ cloudinary: cloudinary, folder: "demo", allowedFormats: ["jpg", "png"] });
+// //const storage = multer.memoryStorage()
+// const upload = multer({
+//   storage, limits: {
+//     fileSize: +process.env.MAX_FILE_SIZE
+//   }
+// }).array('file', +process.env.UPLOAD_MAX_NUMBER_FILES);
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, "private/uploads");
+  },
+  filename: function(req, file, cb) {
+    var prefix = crypto.randomBytes(16).toString("hex");
+    cb(null, prefix + '-' +Date.now());
   }
-}).array('file', +process.env.UPLOAD_MAX_NUMBER_FILES);
+});
+const upload = multer({ storage: storage , limits: {
+  fileSize: 200000
+} }).array('file', 10);
 
 
 
@@ -38,7 +54,7 @@ export class UserController extends BaseController {
   public loadRoutes(prefix: String, router: Router) {
 
     this.initUploadFileRoute(prefix, router);
-    // this.initListFilesInFolderRoute(prefix, router);
+    this.initListFilesRoute(prefix, router);
     // this.initRenameFileRoute(prefix, router);
     // this.initCreateFolderRoute(prefix, router);
     // this.initShareFileRoute(prefix, router);
@@ -68,7 +84,8 @@ export class UserController extends BaseController {
         let uploadError: BasicResponse = that.getUploadError(true, req, err);
         if (that.hasUploadError(uploadError)) {
           that.sendResponse(uploadError, req, res, next);
-        } else {          
+        } else {       
+          console.log(req.files)   
           new FileService().processFileupload(req, res, next);
         }
 
@@ -79,12 +96,12 @@ export class UserController extends BaseController {
 
 
 
-  // //   public initRenameFileRoute(prefix: String, router: Router): any {
+  //   public initRenameFileRoute(prefix: String, router: Router): any {
 
-  // //     router.put(prefix + "/rename_file/:id", [this.authorize.bind(this)], (req, res: Response, next: NextFunction) => {
-  // //       new FileService().updateFileName(req, res, next, this.user_id, this.user_tenantId);
-  // //     })
-  // //   }
+  //     router.put(prefix + "/rename_file/:id", [this.authorize.bind(this)], (req, res: Response, next: NextFunction) => {
+  //       new FileService().updateFileName(req, res, next, this.user_id, this.user_tenantId);
+  //     })
+  //   }
 
 
   //   public initRenameFolderRoute(prefix: String, router: Router): any {
@@ -113,12 +130,12 @@ export class UserController extends BaseController {
 
 
 
-  //   public initListFilesInFolderRoute(prefix: String, router: Router): any {
+    public initListFilesRoute(prefix: String, router: Router): any {
 
-  //     router.get(prefix + "/list_files", [this.authorize.bind(this)], (req, res: Response, next: NextFunction) => {
-  //       new FileService().processListFiles(req, res, next, this.user_id, this.user_tenantId, this.user_email);
-  //     })
-  //   }
+      router.get(prefix + "/list_files", (req, res: Response, next: NextFunction) => {
+        new FileService().processListFiles(req, res, next);
+      })
+    }
 
 
   //   public initShareFileRoute(prefix: String, router: Router): any {

@@ -6,6 +6,12 @@ import { IUploadModel } from '../models/userUpload';
 import { NextFunction, Request, Response } from "express";
 import { UploadFileDTO } from "../dtos/inputs/uploadfiledto";
 import { validateSync } from "class-validator";
+import * as Datauri from 'datauri';
+import * as path from 'path';
+import { uploader, cloudinaryConfig } from '../config/cloudinaryConfig'
+const cloudinary = require("cloudinary");
+const cloudinaryStorage = require("multer-storage-cloudinary");
+const dUri = new Datauri();
 
 
 // const fs = require('fs')
@@ -22,7 +28,9 @@ export class FileService extends BaseService {
         const fileDetails = req.files
         for (let i = 0; i < fileDetails.length; i++) {
             let file = fileDetails[i];
-            console.log(file.path, 'uuuuuuu')
+            // let a = dUri.format(path.extname(file.originalname).toString(),file.buffer).content;
+            // console.log(a, 'here')
+            //cloudinary.v2.uploader.upload(a, options, callback);
                   
             let uploadFileModel = await req.app.locals.file({ secret: { url: file.url, public_id: file["public_id"], originalFileName: file.originalname, fileSize: (file.bytes/1000 + 'kb'), fileExtension: file.mimetype }, nameHash: this.sha256(file.originalname) });
             await uploadFileModel.save().then(result => {
@@ -61,42 +69,42 @@ export class FileService extends BaseService {
 
 
 
-    async processDeleteFile(req: Request, res: Response, next: NextFunction, userId: string, tenantId: string) {
+    // async processDeleteFile(req: Request, res: Response, next: NextFunction, userId: string, tenantId: string) {
+    //     try {
+    //         let existingFile = null;
+
+    //         await req.app.locals.file.findOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
+    //             if (result) {
+    //                 existingFile = result;
+    //             }
+    //         }).catch(err => { });
+    //         if (existingFile == null) {
+    //             this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION, ['Sorry you cannot delete this file']), req, res);
+    //             return next();
+    //         }
+
+    //         let dir = process.env.UPLOAD_PATH + '/' + existingFile.secret.fileName;
+
+    //         // await unlinkAsync(dir)
+    //         await req.app.locals.file.deleteOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
+
+    //             if (result) {
+    //                 this.sendResponse(new BasicResponse(Status.SUCCESS_NO_CONTENT), req, res)
+
+    //             }
+    //         }).catch(err => { })
+
+    //     } catch (ex) {
+    //         this.sendException(ex, new BasicResponse(Status.ERROR, ex), req, res, next);
+    //     }
+    // }
+
+    public async processListFiles(req, res: Response, next: NextFunction) {
         try {
-            let existingFile = null;
+            // let folderId = req.query.id;
+            // await this.verifyParentFolderId(folderId, userId, tenantId, userEmail, req, res, next)
 
-            await req.app.locals.file.findOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
-                if (result) {
-                    existingFile = result;
-                }
-            }).catch(err => { });
-            if (existingFile == null) {
-                this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION, ['Sorry you cannot delete this file']), req, res);
-                return next();
-            }
-
-            let dir = process.env.UPLOAD_PATH + '/' + existingFile.secret.fileName;
-
-            // await unlinkAsync(dir)
-            await req.app.locals.file.deleteOne({ _id: req.params.id, userId: userId, tenantId: tenantId }).then(result => {
-
-                if (result) {
-                    this.sendResponse(new BasicResponse(Status.SUCCESS_NO_CONTENT), req, res)
-
-                }
-            }).catch(err => { })
-
-        } catch (ex) {
-            this.sendException(ex, new BasicResponse(Status.ERROR, ex), req, res, next);
-        }
-    }
-
-    public async processListFiles(req, res: Response, next: NextFunction, userId: string, tenantId: string, userEmail: string) {
-        try {
-            let folderId = req.query.id;
-            await this.verifyParentFolderId(folderId, userId, tenantId, userEmail, req, res, next)
-
-            await this.fetchUserFiles(folderId, userEmail, userId, tenantId, req, res)
+            await this.fetchUserFiles(req, res)
 
         }
         catch (ex) {
@@ -309,15 +317,15 @@ export class FileService extends BaseService {
     }
 
 
-    async fetchUserFiles(folderId: string, userEmail, userId: string, tenantId: string, req: Request, res: Response) {
-        var that = this;
-        let queryParams = {};
-        if (folderId == null) {
-            queryParams = { folderId: null, userId: userId, tenantId: tenantId }
-        } else {
-            queryParams = { folderId: folderId, $or: [{ userId: userId }, { shared_with: that.sha256(userEmail) }], tenantId: tenantId }
-        }
-        await req.app.locals.file.find(queryParams, { userId: 0, tenantId: 0, __v: 0, nameHash: 0 }).then(result => {
+    async fetchUserFiles(req: Request, res: Response) {
+        // var that = this;
+        // let queryParams = {};
+        // if (folderId == null) {
+        //     queryParams = { folderId: null, userId: userId, tenantId: tenantId }
+        // } else {
+        //     queryParams = { folderId: folderId, $or: [{ userId: userId }, { shared_with: that.sha256(userEmail) }], tenantId: tenantId }
+        // }
+        await req.app.locals.file.find({}).then(result => {
             if (result && result.length > 0) {
                 this.sendResponse(new BasicResponse(Status.SUCCESS, result), req, res);
             } else {
