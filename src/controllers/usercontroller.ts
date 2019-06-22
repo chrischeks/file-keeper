@@ -22,27 +22,12 @@ cloudinary.config({
 });
 
 
-// //const storage = cloudinaryStorage({ cloudinary: cloudinary, folder: "demo", allowedFormats: ["jpg", "png"] });
-// //const storage = multer.memoryStorage()
-// const upload = multer({
-//   storage, limits: {
-//     fileSize: +process.env.MAX_FILE_SIZE
-//   }
-// }).array('file', +process.env.UPLOAD_MAX_NUMBER_FILES);
-
-var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, "private/uploads");
-  },
-  filename: function(req, file, cb) {
-    var prefix = crypto.randomBytes(16).toString("hex");
-    cb(null, prefix + '-' +Date.now());
+const storage = cloudinaryStorage({ cloudinary: cloudinary, params:{use_filename: true}, allowedFormats: ["jpg", "png"] });
+const upload = multer({
+  storage, limits: {
+    fileSize: +process.env.MAX_FILE_SIZE
   }
-});
-const upload = multer({ storage: storage , limits: {
-  fileSize: 200000
-} }).array('file', 10);
-
+}).array('file', +process.env.UPLOAD_MAX_NUMBER_FILES);
 
 
 export class UserController extends BaseController {
@@ -55,7 +40,7 @@ export class UserController extends BaseController {
 
     this.initUploadFileRoute(prefix, router);
     this.initListFilesRoute(prefix, router);
-    // this.initRenameFileRoute(prefix, router);
+    this.initRenameFileRoute(prefix, router);
     // this.initCreateFolderRoute(prefix, router);
     // this.initShareFileRoute(prefix, router);
     // this.initListSubFoldersRoute(prefix, router);
@@ -68,7 +53,7 @@ export class UserController extends BaseController {
     // this.initShareFolderRoute(prefix, router);
     // this.initViewSharedFileRoute(prefix, router);
     // this.initMoveFileRoute(prefix, router);
-    // this.initDeleteFileRoute(prefix, router);
+    this.initDeleteFileRoute(prefix, router);
     // this.initDeleteFolderRoute(prefix, router);
     // this.initDownloadFolderRoute(prefix, router);
     // this.initShareToAllRoute(prefix, router)
@@ -96,12 +81,12 @@ export class UserController extends BaseController {
 
 
 
-  //   public initRenameFileRoute(prefix: String, router: Router): any {
+    public initRenameFileRoute(prefix: String, router: Router): any {
 
-  //     router.put(prefix + "/rename_file/:id", [this.authorize.bind(this)], (req, res: Response, next: NextFunction) => {
-  //       new FileService().updateFileName(req, res, next, this.user_id, this.user_tenantId);
-  //     })
-  //   }
+      router.patch(prefix + "/rename_file", (req, res: Response, next: NextFunction) => {
+        new FileService().updateFileName(req, res, next, this.user_id, this.user_tenantId);
+      })
+    }
 
 
   //   public initRenameFolderRoute(prefix: String, router: Router): any {
@@ -217,12 +202,12 @@ export class UserController extends BaseController {
   //     })
   //   }
 
-  //   public initDeleteFileRoute(prefix: String, router: Router): any {
+    public initDeleteFileRoute(prefix: String, router: Router): any {
 
-  //     router.delete(prefix + "/delete_file/:id", [this.authorize.bind(this)], (req, res: Response, next: NextFunction) => {
-  //       new FileService().processDeleteFile(req, res, next, this.user_id, this.user_tenantId);
-  //     })
-  //   }
+      router.delete(prefix + "/delete_file/:id", (req, res: Response, next: NextFunction) => {
+        new FileService().processDeleteFile(req, res, next);
+      })
+    }
 
   //   public initDeleteFolderRoute(prefix: String, router: Router): any {
 

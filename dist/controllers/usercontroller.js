@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const basecontroller_1 = require("./basecontroller");
 const fileservice_1 = require("../services/fileservice");
 const multer = require("multer");
-const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
 cloudinary.config({
@@ -11,18 +10,12 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "private/uploads");
-    },
-    filename: function (req, file, cb) {
-        var prefix = crypto.randomBytes(16).toString("hex");
-        cb(null, prefix + '-' + Date.now());
+const storage = cloudinaryStorage({ cloudinary: cloudinary, params: { use_filename: true }, allowedFormats: ["jpg", "png"] });
+const upload = multer({
+    storage, limits: {
+        fileSize: +process.env.MAX_FILE_SIZE
     }
-});
-const upload = multer({ storage: storage, limits: {
-        fileSize: 200000
-    } }).array('file', 10);
+}).array('file', +process.env.UPLOAD_MAX_NUMBER_FILES);
 class UserController extends basecontroller_1.BaseController {
     constructor() {
         super();
@@ -30,6 +23,8 @@ class UserController extends basecontroller_1.BaseController {
     loadRoutes(prefix, router) {
         this.initUploadFileRoute(prefix, router);
         this.initListFilesRoute(prefix, router);
+        this.initRenameFileRoute(prefix, router);
+        this.initDeleteFileRoute(prefix, router);
     }
     initUploadFileRoute(prefix, router) {
         router.post(prefix + "/upload_file", (req, res, next) => {
@@ -46,9 +41,19 @@ class UserController extends basecontroller_1.BaseController {
             });
         });
     }
+    initRenameFileRoute(prefix, router) {
+        router.patch(prefix + "/rename_file", (req, res, next) => {
+            new fileservice_1.FileService().updateFileName(req, res, next, this.user_id, this.user_tenantId);
+        });
+    }
     initListFilesRoute(prefix, router) {
         router.get(prefix + "/list_files", (req, res, next) => {
             new fileservice_1.FileService().processListFiles(req, res, next);
+        });
+    }
+    initDeleteFileRoute(prefix, router) {
+        router.delete(prefix + "/delete_file/:id", (req, res, next) => {
+            new fileservice_1.FileService().processDeleteFile(req, res, next);
         });
     }
 }
