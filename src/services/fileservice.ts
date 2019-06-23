@@ -58,7 +58,6 @@ export class FileService extends BaseService {
                     that.sendResponse(new BasicResponse(Status.SUCCESS, result), req, res);
                 }
             });
-
         }
         catch (ex) {
             this.sendException(ex, new BasicResponse(Status.ERROR), req, res, next);
