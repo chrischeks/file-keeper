@@ -7,13 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const class_validator_1 = require("class-validator");
-class UploadFileDTO {
-    constructor(originalFileName, fileName, fileSize, fileExtension, folderId) {
-        this.originalFileName = originalFileName;
+class RenameFileDTO {
+    constructor(fileName) {
         this.fileName = fileName;
-        this.fileSize = fileSize;
-        this.fileExtension = fileExtension;
-        this.folderId = folderId;
     }
 }
 __decorate([
@@ -21,7 +17,7 @@ __decorate([
         message: 'fileName is required'
     }),
     class_validator_1.Length(1, 120, {
-        message: 'fileName should be between 1 and 100 characters'
+        message: 'fileName should be between 1 and 120 characters'
     })
-], UploadFileDTO.prototype, "fileName", void 0);
-exports.UploadFileDTO = UploadFileDTO;
+], RenameFileDTO.prototype, "fileName", void 0);
+exports.RenameFileDTO = RenameFileDTO;

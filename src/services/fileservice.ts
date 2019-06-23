@@ -4,7 +4,7 @@ import { BasicResponse } from "../dtos/outputs/basicresponse";
 import { Status } from '../dtos/enums/statusenums';
 import { IUploadModel } from '../models/userUpload';
 import { NextFunction, Request, Response } from "express";
-import { RenameFileDTO } from "../dtos/inputs/renamefiledto";
+//import { RenameFileDTO } from "../dtos/inputs/renamefiledto";
 import { validateSync } from "class-validator";
 
 const cloudinary = require("cloudinary");
@@ -69,12 +69,12 @@ export class FileService extends BaseService {
     public async updateFileName(req: Request, res: Response, next: NextFunction, userId: string, tenantId: string) {
         try {
             const to_public_id = req.body.to_public_id;
-            let dto = new RenameFileDTO(to_public_id);
-            let errors = await this.validateExistingFileDetail(dto);
-            if(this.hasErrors(errors)){
-                await this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION, errors), req, res);
-                return next();
-            }
+            // let dto = new RenameFileDTO(to_public_id);
+            // let errors = await this.validateExistingFileDetail(dto);
+            // if(this.hasErrors(errors)){
+            //     await this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION, errors), req, res);
+            //     return next();
+            // }
             const from_public_id = req.body.from_public_id;
             const that = this;
             cloudinary.v2.uploader.rename(from_public_id, to_public_id, function (error, result) {
@@ -246,14 +246,14 @@ export class FileService extends BaseService {
 
 
 
-    async validateExistingFileDetail(dto: RenameFileDTO) {
-        let errors = validateSync(dto, { validationError: { target: false }} );
-        if(this.hasErrors(errors)){
-            return errors;
-        }
+    // async validateExistingFileDetail(dto: RenameFileDTO) {
+    //     let errors = validateSync(dto, { validationError: { target: false }} );
+    //     if(this.hasErrors(errors)){
+    //         return errors;
+    //     }
 
-        return errors;
-    }
+    //     return errors;
+    // }
 
     // checkOriginalFileName(dto: UpdateFileNameDTO): any {
     //     return (dto.originalFileName === undefined || dto.originalFileName.length === 0 || dto.originalFileName === ""|| dto.originalFileName === null)

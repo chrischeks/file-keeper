@@ -9,7 +9,7 @@ import errorHandler = require("errorhandler");
 import methodOverride = require("method-override");
 import mongoose = require("mongoose"); //import mongoose
 import encrypt = require('mongoose-encryption');
-import { uploader, cloudinaryConfig } from './config/cloudinaryConfig'
+//import { uploader, cloudinaryConfig } from './config/cloudinaryConfig'
 dotenv.config();
 
 //routes
@@ -157,7 +157,7 @@ export class Server {
     // console.log(chalk.default.yellow.bgBlack.bold("Loading share controller routes"));
     // new ShareController().loadRoutes('/share',router);
 
-    this.app.use('*', cloudinaryConfig);
+    //this.app.use('*', cloudinaryConfig);
     //use router middleware
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     this.app.use('/v1',router);

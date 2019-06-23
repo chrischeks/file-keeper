@@ -3,11 +3,8 @@ import { BaseController } from "./basecontroller";
 import { FileService } from '../services/fileservice';
 import multer = require("multer");
 import { BasicResponse } from "../dtos/outputs/basicresponse";
-import crypto = require('crypto');
 
-// import { FolderService } from "../services/folderservice";
-// import { ShareFileService } from "../services/shareFileService";
-// import { ShareFolderService } from '../services/shareFolderService';
+
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
 
