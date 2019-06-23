@@ -51,7 +51,7 @@ export class FileService extends BaseService {
     public async processListFiles(req, res: Response, next: NextFunction) {
         try {
             const that = this
-            cloudinary.v2.api.resources({ type: 'upload', max_results: 60 }, function (error, result) {
+            cloudinary.v2.api.resources({ type: 'upload', max_results: 50 }, function (error, result) {
                 if (error) {
                     that.sendResponse(new BasicResponse(Status.ERROR), req, res);
                 } else {

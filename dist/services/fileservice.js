@@ -53,7 +53,7 @@ class FileService extends baseservice_1.BaseService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const that = this;
-                cloudinary.v2.api.resources({ type: 'upload', max_results: 60 }, function (error, result) {
+                cloudinary.v2.api.resources({ type: 'upload', max_results: 50 }, function (error, result) {
                     if (error) {
                         that.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.ERROR), req, res);
                     }
