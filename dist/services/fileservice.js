@@ -11,8 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const baseservice_1 = require("./baseservice");
 const basicresponse_1 = require("../dtos/outputs/basicresponse");
 const statusenums_1 = require("../dtos/enums/statusenums");
-const renamefiledto_1 = require("../dtos/inputs/renamefiledto");
-const class_validator_1 = require("class-validator");
 const cloudinary = require("cloudinary");
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -71,12 +69,6 @@ class FileService extends baseservice_1.BaseService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const to_public_id = req.body.to_public_id;
-                let dto = new renamefiledto_1.RenameFileDTO(to_public_id);
-                let errors = yield this.validateExistingFileDetail(dto);
-                if (this.hasErrors(errors)) {
-                    yield this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.FAILED_VALIDATION, errors), req, res);
-                    return next();
-                }
                 const from_public_id = req.body.from_public_id;
                 const that = this;
                 cloudinary.v2.uploader.rename(from_public_id, to_public_id, function (error, result) {
@@ -91,15 +83,6 @@ class FileService extends baseservice_1.BaseService {
             catch (ex) {
                 this.sendException(ex, new basicresponse_1.BasicResponse(statusenums_1.Status.ERROR, ex), req, res, next);
             }
-        });
-    }
-    validateExistingFileDetail(dto) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let errors = class_validator_1.validateSync(dto, { validationError: { target: false } });
-            if (this.hasErrors(errors)) {
-                return errors;
-            }
-            return errors;
         });
     }
 }
