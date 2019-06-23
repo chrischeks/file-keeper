@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-import {createTransport, TransportOptions} from "nodemailer";
+//import {createTransport, TransportOptions} from "nodemailer";
 import chalk = require('chalk');
 import { BasicResponse } from "../dtos/outputs/basicresponse";
 import { Status } from "../dtos/enums/statusenums";

@@ -1,6 +1,6 @@
 {
   "name": "filemanager",
-  "description": "A personal file manager. manage files",
+  "description": "A personal file manager manage files",
   "version": "1.0.0",
   "private": true,
   "author": "Chekwube Udeogu",
@@ -8,6 +8,7 @@
     "dev": "NODE_ENV=dev node ./bin/www",
     "staging": "NODE_ENV=dev node ./bin/www",
     "grunt": "grunt",
+    "build":"npm run grunt",
     "test": "NODE_ENV=test mocha -r ts-node/register src/test/**/*.ts --timeout 30000 --exit",
     "test_windows": "cross-env NODE_ENV=test mocha -r ts-node/register src/test/**/*.ts --timeout 50000 --exit",
     "start": "node ./bin/www"
@@ -44,8 +45,13 @@
     "node-cron": "^1.2.1",
     "q": "^1.4.1",
     "qs": "^6.6.0",
+    "grunt": "^1.0.4",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-ts": "^6.0.0-beta.22",
     "swagger-ui-express": "^3.0.10",
     "validator": "^10.11.0",
+    "typescript": "^2.9.2",
     "validator.ts": "^0.2.2",
     "zip-a-folder": "0.0.7"
   },
@@ -64,16 +70,12 @@
     "@types/node": "^12.0.0",
     "chai": "^3.5.0",
     "cross-env": "^5.2.0",
-    "grunt": "^1.0.4",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-ts": "^6.0.0-beta.22",
+    
     "mocha": "^5.2.0",
     "mocha-typescript": "^1.1.17",
     "nodemon": "^1.18.9",
     "should": "^13.2.3",
     "supertest": "^3.4.2",
-    "ts-node": "^7.0.1",
-    "typescript": "^2.9.2"
+    "ts-node": "^7.0.1"
   }
 }
