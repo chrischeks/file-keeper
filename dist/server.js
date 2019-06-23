@@ -11,7 +11,6 @@ const errorHandler = require("errorhandler");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
-const cloudinaryConfig_1 = require("./config/cloudinaryConfig");
 dotenv.config();
 const usercontroller_1 = require("./controllers/usercontroller");
 const file_1 = require("./schemas/file");
@@ -60,7 +59,6 @@ class Server {
         var swaggerUi = require('swagger-ui-express'), swaggerDocument = require('../swagger.json');
         console.log(chalk.default.yellow.bgBlack.bold("Loading user controller routes"));
         new usercontroller_1.UserController().loadRoutes('/user', router);
-        this.app.use('*', cloudinaryConfig_1.cloudinaryConfig);
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
         this.app.use('/v1', router);
         this.app.all('*', (req, res) => {

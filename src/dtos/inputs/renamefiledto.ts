@@ -2,7 +2,6 @@ import { Length, IsNotEmpty } from "class-validator";
 
 export class RenameFileDTO {
 
-
     @IsNotEmpty({
         message: 'fileName is required'
     })
