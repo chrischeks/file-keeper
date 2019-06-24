@@ -19,7 +19,7 @@ cloudinary.config({
 });
 
 
-const storage = cloudinaryStorage({ cloudinary: cloudinary, params:{use_filename: true}, allowedFormats: ["jpg", "png"] });
+const storage = cloudinaryStorage({ cloudinary: cloudinary, folder:"cheks@gmail.com/keeper", allowedFormats: ["jpg", "png"] });
 const upload = multer({
   storage, limits: {
     fileSize: +process.env.MAX_FILE_SIZE

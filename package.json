@@ -8,7 +8,7 @@
     "dev": "NODE_ENV=dev node ./bin/www",
     "staging": "NODE_ENV=dev node ./bin/www",
     "grunt": "grunt",
-    "build":"npm run grunt",
+    "build":"npm run grunt prod",
     "test": "NODE_ENV=test mocha -r ts-node/register src/test/**/*.ts --timeout 30000 --exit",
     "test_windows": "cross-env NODE_ENV=test mocha -r ts-node/register src/test/**/*.ts --timeout 50000 --exit",
     "start": "node ./bin/www"
