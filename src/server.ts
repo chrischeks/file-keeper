@@ -33,6 +33,11 @@ import { UploadSchema } from "./schemas/file";
 import chalk = require('chalk');
 import { info } from "console";
 // import { ShareController } from './controllers/filesharecontroller';
+import { AuthController } from './controllers/authcontroller';
+import { IRegisterModel } from './models/register';
+import { registerSchema } from './schemas/register';
+import { ITokenModel } from './models/token';
+import { tokenSchema } from './schemas/token';
 
 /**
  * The server.
@@ -125,6 +130,8 @@ export class Server {
     mongoose.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey, encryptedFields: ['secret'] });
    
     this.app.locals.file = connection.model<IUploadModel>("File", UploadSchema);
+    this.app.locals.register = connection.model<IRegisterModel>("Register", registerSchema);
+    this.app.locals.token = connection.model<ITokenModel>("Token", tokenSchema);
     // this.app.locals.folder = connection.model<IFolderModel>("Folder", FolderSchema);
 
     // catch 404 and forward to error handler
@@ -153,11 +160,12 @@ export class Server {
 
     console.log(chalk.default.yellow.bgBlack.bold("Loading user controller routes"));
     new UserController().loadRoutes('/user',router);
+    console.log(chalk.default.yellow.bgBlack.bold("Loading share controller routes"));
+    new AuthController().loadRoutes('/auth',router);
 
     // console.log(chalk.default.yellow.bgBlack.bold("Loading share controller routes"));
     // new ShareController().loadRoutes('/share',router);
 
-    //this.app.use('*', cloudinaryConfig);
     //use router middleware
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     this.app.use('/v1',router);

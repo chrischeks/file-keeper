@@ -4,6 +4,8 @@ import { BasicResponse } from "../dtos/outputs/basicresponse";
 import { Status } from "../dtos/enums/statusenums";
 import crypto = require('crypto');
 import { NextFunction, Request, Response } from "express";
+import * as jwt from 'jsonwebtoken';
+import { ITokenData } from '../interfaces/tokenInterface';
 // const qs = require('qs') ;
 // import * as http from "http"
 // // import * as mustache from "mustache"
@@ -15,7 +17,7 @@ export class BaseService {
 
     protected errors;
 
-    protected hasErrors(errors: any) : boolean {
+    protected hasErrors(errors: any): boolean {
         return !(errors === undefined || errors.length == 0)
     }
 
@@ -28,25 +30,25 @@ export class BaseService {
         return crypto.createHash("sha256").update(data, "utf8").digest("base64");
     }
 
-    protected sendError(req: Request, res: Response, next : NextFunction, data?: Object) {
+    protected sendError(req: Request, res: Response, next: NextFunction, data?: Object) {
 
         var dat = {
-            status : 400,
+            status: 400,
             data: data
         }
         res.status(401);
         res.send(dat);
-        
+
     }
 
     public sendResponse(serviceResponse: BasicResponse, req: Request, res: Response): any {
         var response = {
-          status : serviceResponse.getStatusString() ,
-          data: serviceResponse.getData()
+            status: serviceResponse.getStatusString(),
+            data: serviceResponse.getData()
         }
-    
+
         res.status(this.getHttpStatus(serviceResponse.getStatusString()));
-    
+
         console.log('responding with', response);
         res.json(response);
     }
@@ -60,107 +62,112 @@ export class BaseService {
         result.__v = null;
         result.userId = null;
         result.tenantId = null;
-        if(result.nameHash !== undefined){
+        if (result.nameHash !== undefined) {
             result.nameHash = null;
         }
 
         return result;
     }
-    
+
     private getHttpStatus(status: string): number {
-        switch(status){
+        switch (status) {
             case 'SUCCESS':
                 return 200;
             case 'CREATED':
                 return 201;
-            case 'NOT_FOUND':
-                return 404;
-            case 'FAILED_VALIDATION':
-                return 400;
-            case 'CONFLICT':
-                return 409;
-            case 'FORBIDDEN':
-                return 403;
-            case 'PRECONDITION_FAILED':
-                return 412;
             case 'SUCCESS_NO_CONTENT':
                 return 204;
+            case 'FAILED_VALIDATION':
+                return 400;
+            case 'NOT_FOUND':
+                return 404;
+            case 'CONFLICT':
+                return 409;
+            case 'UNPROCESSABLE_ENTRY':
+                return 422;
+            case 'UNATHORIZED':
+                return 401;
+            case 'PRECONDITION_FAILED':
+                return 412;
             default:
                 return 500;
         }
     }
-    
-    protected logInfo(info: string){
+
+    protected logInfo(info: string) {
         console.log(chalk.default.blue.bgGreen.bold(info));
     }
 
-    protected logError(error: string){
+    protected logError(error: string) {
         console.log(chalk.default.blue.bgRed.bold(error));
     }
 
     protected getDuplicateError(fileName: string): any {
-        return {'property' : 'fileName', 'constraints' : {'unique' : 'must be unique'}, value : fileName };
+        return { 'property': 'fileName', 'constraints': { 'unique': 'must be unique' }, value: fileName };
     }
 
     protected getFolderDuplicateError(folderName: string): any {
-        return {'property' : 'folderName', 'constraints' : {'unique' : 'must be unique'}, value : folderName };
+        return { 'property': 'folderName', 'constraints': { 'unique': 'must be unique' }, value: folderName };
     }
 
     protected getUnchangedNameError(fileName: string): any {
-        return {'property' : 'fileName', 'constraints' : {'unique' : 'File Name is Unchanged'}, value : fileName };
+        return { 'property': 'fileName', 'constraints': { 'unique': 'File Name is Unchanged' }, value: fileName };
     }
 
     protected getEmptyOriginalFileNameError(): any {
-        return {'property' : 'originalFileName', 'constraints' : {'required' : 'originalFileName can not be empty'}, value : null };
+        return { 'property': 'originalFileName', 'constraints': { 'required': 'originalFileName can not be empty' }, value: null };
     }
 
     protected getEmptyFolderNameError(): any {
-        return {'property' : 'folderName', 'constraints' : {'required' : 'folderName can not be empty'}, value : null };
+        return { 'property': 'folderName', 'constraints': { 'required': 'folderName can not be empty' }, value: null };
     }
 
     protected getRecipientRequiredWhenShareTypePrivateError(): any {
-        return {'property' : 'recipient', 'constraints' : {'required' : 'Recipient is required'}, value : null };
+        return { 'property': 'recipient', 'constraints': { 'required': 'Recipient is required' }, value: null };
     }
 
     protected getFileAlreadySharedWithRecipientError(recipient: string): any {
-        return {'property' : 'recipient', 'constraints' : {'required' : 'You have already shared this file with this recipient'}, value : recipient };
+        return { 'property': 'recipient', 'constraints': { 'required': 'You have already shared this file with this recipient' }, value: recipient };
     }
     protected getInvalidFolderError(): any {
-        return {'property' : 'parentFolder', 'constraints' : {'invalid' : 'Selected folder is invalid'}, value : null };
+        return { 'property': 'parentFolder', 'constraints': { 'invalid': 'Selected folder is invalid' }, value: null };
+    }
+    protected getDuplicateEmailError(email: string): any {
+        return { 'property': 'email', 'constraints': { 'unique': 'email must be unique' }, value: email };
     }
 
 
 
-    protected sendMail(req, res: Response, next: NextFunction, recipients, senderName, senderEmail, fileName) {
-        // const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT,'utf8');
-        const view = {data:{senderName: senderName, senderEmail:senderEmail, fileName: fileName}}
-        // const output = mustache.render(content, view);
-
-        
-        let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
-       let payload = new URLSearchParams();
-       payload.append("subject", "Quabbly Sharing")
-    //    payload.append("htmlContent", output)
-       recipients.forEach(element => {
-           payload.append("recipient", element)
-       });
+    // protected sendMail(req, res: Response, next: NextFunction, recipients, senderName, senderEmail, fileName) {
+    //     // const content = fs.readFileSync(process.env.FILE_SHARE_EMAIL_CONTENT,'utf8');
+    //     const view = {data:{senderName: senderName, senderEmail:senderEmail, fileName: fileName}}
+    //     // const output = mustache.render(content, view);
 
 
-        // axios({
-        //     url: process.env.EMAIL_URL,
-        //     method: "post",
-        //     data: payload,
-        //     headers: {
-        //         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        //         "Authorization" : `Bearer ${token}`
-        //     } 
-        // })
-    }
+    //     let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
+    //    let payload = new URLSearchParams();
+    //    payload.append("subject", "Quabbly Sharing")
+    // //    payload.append("htmlContent", output)
+    //    recipients.forEach(element => {
+    //        payload.append("recipient", element)
+    //    });
+
+
+    //     // axios({
+    //     //     url: process.env.EMAIL_URL,
+    //     //     method: "post",
+    //     //     data: payload,
+    //     //     headers: {
+    //     //         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    //     //         "Authorization" : `Bearer ${token}`
+    //     //     } 
+    //     // })
+    // }
 
 
 
     protected verifyRecipient(existingDoc, req: Request, response: Response, next: NextFunction, recipients, userFirstname, userEmail, docName) {
-        let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;      
+        let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
         // axios({
         //     url: process.env.USER_URL + '/v1/users/all',
         //     method: "get",
@@ -238,25 +245,25 @@ export class BaseService {
 
 
 
-    
-    async saveShareDetails(existingDoc, req: Request, res: Response, next:NextFunction, recipients: string[], userName: string, userEmail: string, docName: string) {
+
+    async saveShareDetails(existingDoc, req: Request, res: Response, next: NextFunction, recipients: string[], userName: string, userEmail: string, docName: string) {
         await existingDoc.save().then(result => {
             if (result) {
-                this.sendResponse(new BasicResponse(Status.SUCCESS, ["The share was successful"]),req, res);   
-            }else{
+                this.sendResponse(new BasicResponse(Status.SUCCESS, ["The share was successful"]), req, res);
+            } else {
                 this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION), req, res)
             }
-            
+
         }).catch(err => { });
-    
-        this.sendMail(req, res, next, recipients, userName, userEmail, docName)
+
+        //this.sendMail(req, res, next, recipients, userName, userEmail, docName)
     }
 
 
 
     async merge(existingRecipients, newRecipients) {
         var hash = {};
-        if(!existingRecipients || existingRecipients.length == 0){
+        if (!existingRecipients || existingRecipients.length == 0) {
             existingRecipients = [];
         }
         return existingRecipients.concat(newRecipients).filter(function (val) {
@@ -297,6 +304,27 @@ export class BaseService {
         }
 
     }
-    
+
+    protected createToken(user): ITokenData {
+        const expiresIn = process.env.TOKEN_EXPIRY;
+        const secret = process.env.JWT_SECRET;
+        const dataStoredInToken = {
+            _id: user._id,
+            email: user.email
+        };
+
+        const secure: boolean = true
+        const token = jwt.sign(dataStoredInToken, secret, { expiresIn })
+        return {
+            expiresIn,
+            token,
+            secure
+        };
+    }
+
+
+    protected createCookie(tokenData) {
+        return `filekeeper=${tokenData.token}; Max-Age=${tokenData.expiresIn}`;
+    }
 
 }

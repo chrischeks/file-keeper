@@ -61,6 +61,8 @@ export class BaseController {
         return 201;
       case 'FAILED_VALIDATION':
         return 400;
+      case 'UNPROCESSABLE_ENTRY':
+        return 412;
       default:
         return 500;
     }

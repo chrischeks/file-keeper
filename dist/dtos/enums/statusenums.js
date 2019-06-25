@@ -10,4 +10,5 @@ var Status;
     Status[Status["PRECONDITION_FAILED"] = 5] = "PRECONDITION_FAILED";
     Status[Status["SUCCESS_NO_CONTENT"] = 6] = "SUCCESS_NO_CONTENT";
     Status[Status["FORBIDDEN"] = 7] = "FORBIDDEN";
+    Status[Status["UNPROCESSABLE_ENTRY"] = 8] = "UNPROCESSABLE_ENTRY";
 })(Status = exports.Status || (exports.Status = {}));
