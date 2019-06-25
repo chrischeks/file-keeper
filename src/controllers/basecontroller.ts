@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-import {createTransport, TransportOptions} from "nodemailer";
+//import {createTransport, TransportOptions} from "nodemailer";
 import chalk = require('chalk');
 import { BasicResponse } from "../dtos/outputs/basicresponse";
 import { Status } from "../dtos/enums/statusenums";
@@ -61,6 +61,8 @@ export class BaseController {
         return 201;
       case 'FAILED_VALIDATION':
         return 400;
+      case 'UNPROCESSABLE_ENTRY':
+        return 412;
       default:
         return 500;
     }

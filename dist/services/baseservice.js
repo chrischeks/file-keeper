@@ -12,6 +12,7 @@ const chalk = require("chalk");
 const basicresponse_1 = require("../dtos/outputs/basicresponse");
 const statusenums_1 = require("../dtos/enums/statusenums");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 class BaseService {
     hasErrors(errors) {
         return !(errors === undefined || errors.length == 0);
@@ -55,18 +56,20 @@ class BaseService {
                 return 200;
             case 'CREATED':
                 return 201;
-            case 'NOT_FOUND':
-                return 404;
-            case 'FAILED_VALIDATION':
-                return 400;
-            case 'CONFLICT':
-                return 409;
-            case 'FORBIDDEN':
-                return 403;
-            case 'PRECONDITION_FAILED':
-                return 412;
             case 'SUCCESS_NO_CONTENT':
                 return 204;
+            case 'FAILED_VALIDATION':
+                return 400;
+            case 'NOT_FOUND':
+                return 404;
+            case 'CONFLICT':
+                return 409;
+            case 'UNPROCESSABLE_ENTRY':
+                return 422;
+            case 'UNATHORIZED':
+                return 401;
+            case 'PRECONDITION_FAILED':
+                return 412;
             default:
                 return 500;
         }
@@ -101,14 +104,8 @@ class BaseService {
     getInvalidFolderError() {
         return { 'property': 'parentFolder', 'constraints': { 'invalid': 'Selected folder is invalid' }, value: null };
     }
-    sendMail(req, res, next, recipients, senderName, senderEmail, fileName) {
-        const view = { data: { senderName: senderName, senderEmail: senderEmail, fileName: fileName } };
-        let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
-        let payload = new URLSearchParams();
-        payload.append("subject", "Quabbly Sharing");
-        recipients.forEach(element => {
-            payload.append("recipient", element);
-        });
+    getDuplicateEmailError(email) {
+        return { 'property': 'email', 'constraints': { 'unique': 'email must be unique' }, value: email };
     }
     verifyRecipient(existingDoc, req, response, next, recipients, userFirstname, userEmail, docName) {
         let token = (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') ? req.headers.authorization.split(' ')[1] : null;
@@ -152,7 +149,6 @@ class BaseService {
                     this.sendResponse(new basicresponse_1.BasicResponse(statusenums_1.Status.FAILED_VALIDATION), req, res);
                 }
             }).catch(err => { });
-            this.sendMail(req, res, next, recipients, userName, userEmail, docName);
         });
     }
     merge(existingRecipients, newRecipients) {
@@ -198,6 +194,24 @@ class BaseService {
                 this.sendException(ex, new basicresponse_1.BasicResponse(statusenums_1.Status.ERROR), req, res, next);
             }
         });
+    }
+    createToken(user) {
+        const expiresIn = process.env.TOKEN_EXPIRY;
+        const secret = process.env.JWT_SECRET;
+        const dataStoredInToken = {
+            _id: user._id,
+            email: user.email
+        };
+        const secure = true;
+        const token = jwt.sign(dataStoredInToken, secret, { expiresIn });
+        return {
+            expiresIn,
+            token,
+            secure
+        };
+    }
+    createCookie(tokenData) {
+        return `filekeeper=${tokenData.token}; Max-Age=${tokenData.expiresIn}`;
     }
 }
 exports.BaseService = BaseService;

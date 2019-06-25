@@ -10,7 +10,7 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-const storage = cloudinaryStorage({ cloudinary: cloudinary, params: { use_filename: true }, allowedFormats: ["jpg", "png"] });
+const storage = cloudinaryStorage({ cloudinary: cloudinary, folder: "cheks@gmail.com/keeper", allowedFormats: ["jpg", "png"] });
 const upload = multer({
     storage, limits: {
         fileSize: +process.env.MAX_FILE_SIZE

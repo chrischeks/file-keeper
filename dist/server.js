@@ -15,6 +15,9 @@ dotenv.config();
 const usercontroller_1 = require("./controllers/usercontroller");
 const file_1 = require("./schemas/file");
 const chalk = require("chalk");
+const authcontroller_1 = require("./controllers/authcontroller");
+const register_1 = require("./schemas/register");
+const token_1 = require("./schemas/token");
 class Server {
     static bootstrap() {
         return new Server();
@@ -47,6 +50,8 @@ class Server {
         var sigKey = process.env.db_signing_key;
         mongoose.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey, encryptedFields: ['secret'] });
         this.app.locals.file = connection.model("File", file_1.UploadSchema);
+        this.app.locals.register = connection.model("Register", register_1.registerSchema);
+        this.app.locals.token = connection.model("Token", token_1.tokenSchema);
         this.app.use(function (err, req, res, next) {
             err.status = 404;
             next(err);
@@ -59,6 +64,8 @@ class Server {
         var swaggerUi = require('swagger-ui-express'), swaggerDocument = require('../swagger.json');
         console.log(chalk.default.yellow.bgBlack.bold("Loading user controller routes"));
         new usercontroller_1.UserController().loadRoutes('/user', router);
+        console.log(chalk.default.yellow.bgBlack.bold("Loading share controller routes"));
+        new authcontroller_1.AuthController().loadRoutes('/auth', router);
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
         this.app.use('/v1', router);
         this.app.all('*', (req, res) => {
