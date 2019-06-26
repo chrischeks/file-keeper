@@ -33,19 +33,12 @@ export class RegisterUserDTO {
     @Length(11, 11)
     phoneNumber: string;
 
-    @IsNotEmpty({
-        "message": "baseUrl is required"  
-      })
-    @IsUrl()
-    baseUrl: string;
 
-
-    constructor(firstName?: string, lastName?: string, email?: string, password?: string, phoneNumber?:string, baseUrl?: string){
+    constructor(firstName?: string, lastName?: string, email?: string, password?: string, phoneNumber?:string){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.baseUrl = baseUrl;
     }
 }
