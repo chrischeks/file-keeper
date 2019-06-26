@@ -2,20 +2,6 @@ import {IsEmail, IsNotEmpty, MinLength, MaxLength, IsNumberString,  IsOptional, 
 
 export class RegisterUserDTO {
 
-    @MinLength(3)
-    @MaxLength(30)
-    @IsNotEmpty({
-        message: 'firstName is required'
-    })
-    firstName: string;
-
-    @MinLength(3)
-    @MaxLength(30)
-    @IsNotEmpty({
-        message: 'lastName is required'
-    })
-    lastName: string;
-
     @IsEmail()
     @IsNotEmpty({
         message: 'email is required'
@@ -28,17 +14,8 @@ export class RegisterUserDTO {
     })
     password: string;
 
-    @IsNumberString()
-    @IsOptional()
-    @Length(11, 11)
-    phoneNumber: string;
-
-
-    constructor(firstName?: string, lastName?: string, email?: string, password?: string, phoneNumber?:string){
-        this.firstName = firstName;
-        this.lastName = lastName;
+    constructor(email?: string, password?: string){
         this.email = email;
         this.password = password;
-        this.phoneNumber = phoneNumber;
     }
 }

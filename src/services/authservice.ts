@@ -67,9 +67,9 @@ export class AuthService extends BaseService {
 
 
     public async registerUser(req: Request, res: Response, next: NextFunction) {
-        const { firstName, lastName, email, password, phoneNumber, baseUrl } = req.body;
+        const {email, password} = req.body;
 
-        let dto = new RegisterUserDTO(firstName, lastName, email, password, phoneNumber);
+        let dto = new RegisterUserDTO(email, password);
         let errors = await this.validateNewUserDetails(dto, req);
         if (this.hasErrors(errors)) {
             this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION, errors), req, res);
@@ -83,8 +83,8 @@ export class AuthService extends BaseService {
     async saveNewUserData(req: Request, res: Response, next: NextFunction, dto: RegisterUserDTO) {
         try {
             const hashedPassword = hashSync(dto.password);
-            let { firstName, lastName, email, phoneNumber } = dto
-            let register: IRegisterModel = req.app.locals.register({ firstName, lastName, email: email.toLowerCase(), password: hashedPassword, phoneNumber: phoneNumber });
+            let {email} = dto
+            let register: IRegisterModel = req.app.locals.register({ email: email.toLowerCase(), password: hashedPassword});
             let responseObj = null
             await register.save().then(async result => {
                 if (result) {

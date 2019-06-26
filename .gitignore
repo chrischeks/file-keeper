@@ -2,6 +2,5 @@ node_modules
 dist/
 .env
 .tscache
-.baseDir.ts.env
-.env
-.egnv
+.baseDir.ts
+public/
