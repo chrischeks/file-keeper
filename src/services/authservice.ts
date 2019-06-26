@@ -70,7 +70,7 @@ export class AuthService extends BaseService {
         const {email, password} = req.body;
 
         let dto = new RegisterUserDTO(email, password);
-        let errors = await this.validateNewUserDetails(dto, req);
+        let errors = await this.validateNewUserDetails(dto, req, 'register');
         if (this.hasErrors(errors)) {
             this.sendResponse(new BasicResponse(Status.FAILED_VALIDATION, errors), req, res);
             return next();
@@ -339,12 +339,12 @@ export class AuthService extends BaseService {
     // }
 
 
-    async validateNewUserDetails(dto, req: Request) {
+    async validateNewUserDetails(dto, req: Request, register?) {
         let errors = validateSync(dto, { validationError: { target: false } });
         if (this.hasErrors(errors)) {
             return errors;
         }
-        if (dto.firstName) {
+        if (register) {
             await req.app.locals.register.find({ email: dto.email.toLowerCase() }).then(result => {
                 if (result && result[0] && result[0]._id && result[0]._id != req.params.id) {
                     errors.push(this.getDuplicateEmailError(dto.email.toLowerCase()));
