@@ -32,7 +32,7 @@
     "dotenv": "^6.2.0",
     "errorhandler": "^1.4.3",
     "express": "^4.16.4",
-    "express-jwt": "^5.3.1",
+    "express-jwt": "^6.0.0",
     "express-mongo-db": "^2.0.4",
     "express-validator": "^5.3.1",
     "grunt": "^1.0.4",
