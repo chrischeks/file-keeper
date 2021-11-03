@@ -51,7 +51,7 @@
     "qs": "^6.6.0",
     "swagger-ui-express": "^3.0.10",
     "typescript": "^2.9.2",
-    "validator": "^10.11.0",
+    "validator": "^13.7.0",
     "validator.ts": "^0.2.2"
   },
   "devDependencies": {
